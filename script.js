@@ -1,142 +1,148 @@
-// Get elements
+
 const addBlogBtn = document.getElementById("addBlogBtn");
 const popupModal = document.getElementById("popupModal");
 const closeModal = document.getElementById("closeModal");
 const blogForm = document.getElementById("blogForm");
 const contentSection = document.getElementById("contentSection");
 
-// Define character limit for truncation
-const CHAR_LIMIT = 100; // Limit for blog content
+const CHAR_LIMIT = 100; 
 
-// Get elements for the "view full content" modal
+
 const viewBlogModal = document.getElementById("viewBlogModal");
 const closeViewModal = document.getElementById("closeViewModal");
 const viewBlogTitle = document.getElementById("viewBlogTitle");
 const viewBlogContent = document.getElementById("viewBlogContent");
 
-// Load blogs from localStorage on page load
-let blogs = JSON.parse(localStorage.getItem('blogs')) || [];
 
-// Function to update the main content section
+let blogs = JSON.parse(localStorage.getItem('blogs')) || [];
+let editIndex = null; 
+
+
 function renderBlogs() {
   contentSection.innerHTML = "<h2 class='text-2xl font-semibold mb-4'>Main Content</h2>";
 
-  // If there are no blogs, show a message
+  
   if (blogs.length === 0) {
     contentSection.innerHTML += "<p>No blogs to display.</p>";
   } else {
-    // Render each blog
+    
     blogs.forEach((blog, index) => {
       const blogPost = document.createElement("div");
       blogPost.classList.add("mb-6", "p-4", "bg-gray-50", "rounded-lg", "shadow-md");
 
-      // Truncate the content if it exceeds the character limit
-      let truncatedContent = blog.content;
-      let isTruncated = false;
-      if (blog.content.length > CHAR_LIMIT) {
-        truncatedContent = blog.content.substring(0, CHAR_LIMIT) + '...';
-        isTruncated = true;
-      }
+      
+      let truncatedContent = blog.content.length > CHAR_LIMIT 
+        ? blog.content.substring(0, CHAR_LIMIT) + '...' 
+        : blog.content;
 
-      // Add the blog title, truncated content, and buttons to the post
+      
       blogPost.innerHTML = `
         <h3 class="text-xl font-semibold">${blog.title}</h3>
         <p class="text-gray-700 mt-2">${truncatedContent}</p>
         <div class="mt-4 flex items-center">
-          ${isTruncated ? '<button class="readMore bg-blue-500 text-white p-2 rounded hover:bg-blue-600 mr-2">Read More</button>' : ''}
-          <button class="bg-yellow-500 text-white p-2 rounded hover:bg-yellow-600 mr-2">Edit</button>
-          <button class="bg-red-500 text-white p-2 rounded hover:bg-red-600 mr-2">Delete</button>
-          <button class="eyeIcon bg-green-500 text-white p-2 rounded hover:bg-green-600 hidden">👁️ ${blog.readCount}</button>
+          ${blog.content.length > CHAR_LIMIT 
+            ? '<button class="readMore text-white bg-gradient-to-r from-pink-400 via-pink-500 to-pink-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 rounded ">Read More</button>' 
+            : ''}
+          <button onclick="editb(${index})" class=" rounded text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Edit</button>
+          <button onclick="deleteBlog(${index})" class=" p-2 rounded text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Delete</button>
+          <button class="eyeIcon text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-pink-200 dark:focus:ring-pink-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 rounded  hidden">👁️ ${blog.readCount}</button>
         </div>
       `;
 
-      // Show the eye icon if read count > 0
+      
       const eyeIconBtn = blogPost.querySelector(".eyeIcon");
       if (blog.readCount > 0) {
-        eyeIconBtn.classList.remove("hidden"); // Show the eye icon if the blog has been read
+        eyeIconBtn.classList.remove("hidden");
       }
 
-      // Event listener for Read More
-      if (isTruncated) {
+      
+      if (blog.content.length > CHAR_LIMIT) {
         const readMoreBtn = blogPost.querySelector(".readMore");
         readMoreBtn.addEventListener("click", () => {
-          // Increment view count (update view count in the blog object)
+          
           blogs[index].readCount++;
+
+          
           localStorage.setItem('blogs', JSON.stringify(blogs));
 
-          // Open the "view full content" modal
+          
           viewBlogTitle.textContent = blog.title;
           viewBlogContent.textContent = blog.content;
           viewBlogModal.classList.remove("hidden");
 
-          // Show the eye icon with updated view count
-          eyeIconBtn.classList.remove("hidden"); // Unhide the eye icon and display the updated count
+          
+          eyeIconBtn.classList.remove("hidden");
+
+          
+          eyeIconBtn.textContent = `👁️ ${blogs[index].readCount}`;
         });
       }
-
-      // Event listener for Delete
-      const deleteBtn = blogPost.querySelector(".bg-red-500");
-      deleteBtn.addEventListener("click", () => {
-        // Delete blog from array and update local storage
-        blogs.splice(index, 1);
-        localStorage.setItem('blogs', JSON.stringify(blogs));
-        renderBlogs(); // Re-render the blogs
-      });
-
-      // Event listener for Eye Icon (to show the count)
-      eyeIconBtn.addEventListener("click", () => {
-        // Optional: Show a popup or console log to show that the blog has been read
-        console.log(`This blog has been read ${blogs[index].readCount} times.`);
-      });
 
       contentSection.appendChild(blogPost);
     });
   }
 }
 
-// Show popup when "Add Blog" button is clicked
+
+function editb(index) {
+  editIndex = index; 
+  const blog = blogs[index];
+
+  document.getElementById("blogTitle").value = blog.title;
+  document.getElementById("blogContent").value = blog.content;
+  popupModal.classList.remove("hidden");
+}
+
+
 addBlogBtn.addEventListener("click", () => {
+  blogForm.reset();
+  editIndex = null; 
   popupModal.classList.remove("hidden");
 });
 
-// Close popup when "Cancel" button is clicked
+
 closeModal.addEventListener("click", () => {
   popupModal.classList.add("hidden");
 });
 
-// Handle form submission
+
 blogForm.addEventListener("submit", (event) => {
-  event.preventDefault(); // Prevent default form submission
+  event.preventDefault();
 
-  // Get form values
-  const blogTitle = document.getElementById("blogTitle").value;
-  const blogContent = document.getElementById("blogContent").value;
+  const blogTitle = document.getElementById("blogTitle").value.trim();
+  const blogContent = document.getElementById("blogContent").value.trim();
 
-  // Create a new blog post object
-  const newBlog = {
-    title: blogTitle,
-    content: blogContent,
-    readCount: 0 // Initialize read count
-  };
+  if (!blogTitle || !blogContent) {
+    alert("Please enter both a blog title and content.");
+    return;
+  }
 
-  // Add the new blog to the array and update local storage
-  blogs.push(newBlog);
+  if (editIndex !== null) {
+    
+    blogs[editIndex] = { title: blogTitle, content: blogContent, readCount: blogs[editIndex].readCount };
+    editIndex = null;
+  } else {
+    
+    blogs.push({ title: blogTitle, content: blogContent, readCount: 0 });
+  }
+
   localStorage.setItem('blogs', JSON.stringify(blogs));
-
-  // Close the modal after submission
   popupModal.classList.add("hidden");
-
-  // Optionally, clear the form
   blogForm.reset();
-
-  // Re-render the blogs
   renderBlogs();
 });
 
-// Close the "view full content" modal when "Close" button is clicked
+
+function deleteBlog(index) {
+  blogs.splice(index, 1);
+  localStorage.setItem('blogs', JSON.stringify(blogs));
+  renderBlogs();
+}
+
+
 closeViewModal.addEventListener("click", () => {
   viewBlogModal.classList.add("hidden");
 });
 
-// Initial render on page load
+
 renderBlogs();
