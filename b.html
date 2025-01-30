@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blogspot</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <!-- Main layout -->
+  <div class="flex">
+
+    <!-- Left Sidebar (Navbar) -->
+    <nav class="bg-gray-800 text-white w-64 h-screen p-4">
+      <h1 class="text-center text-3xl font-semibold mb-6">BLOGSPOT</h1>
+      <div class="flex flex-col space-y-4">
+        <a href="#" class="hover:bg-gray-700 p-2 rounded">Dummy Link 1</a>
+        <a href="#" class="hover:bg-gray-700 p-2 rounded">Dummy Link 2</a>
+        <a href="#" class="hover:bg-gray-700 p-2 rounded">Dummy Link 3</a>
+
+        <button id="addBlogBtn" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Add Blog</button>
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 p-8">
+      <!-- Search Bar -->
+      <div class="mb-6 flex justify-center">
+        <input type="text" placeholder="Search blogs..." class="p-3 border border-gray-300 rounded-md w-1/3">
+      </div>
+
+      <!-- Content Section (Big Div) -->
+      <div id="contentSection" class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-2xl font-semibold mb-4">Main Content</h2>
+        <p>This is the content area where the blog posts will appear.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Popup Modal for Add Blog -->
+  <div id="popupModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white p-6 rounded-lg w-1/3">
+      <h3 class="text-xl font-semibold mb-4">Add a New Blog</h3>
+      <form id="blogForm">
+        <div class="mb-4">
+          <label for="blogTitle" class="block text-sm font-semibold mb-2">Blog Title</label>
+          <input type="text" id="blogTitle" name="blogTitle" class="w-full p-2 border border-gray-300 rounded-md">
+        </div>
+        <div class="mb-4">
+          <label for="blogContent" class="block text-sm font-semibold mb-2">Blog Content</label>
+          <textarea id="blogContent" name="blogContent" rows="4" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
+        </div>
+        <div class="flex justify-end space-x-2">
+          <button type="button" id="closeModal" class="bg-gray-400 text-white p-2 rounded hover:bg-gray-500">Cancel</button>
+          <button type="submit" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Popup Modal for Viewing Full Blog Content -->
+  <div id="viewBlogModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white p-6 rounded-lg w-1/3 max-h-[80vh] overflow-y-auto">
+      <h3 class="text-xl font-semibold" id="viewBlogTitle">Blog Title</h3>
+      <p class="text-gray-700 mt-2" id="viewBlogContent">Full blog content will be displayed here...</p>
+      <div class="mt-4 flex justify-end">
+        <button id="closeViewModal" class="bg-gray-400 text-white p-2 rounded hover:bg-gray-500">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Link to the external JS file -->
+  <script src="script.js"></script>
+
+</body>
+</html>
